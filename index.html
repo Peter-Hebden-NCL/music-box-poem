@@ -1,0 +1,197 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>POEM TITLE</title>
+<style>
+    @font-face {
+        font-family: Janet;
+        src: url(site_files/JanetFont-Regular.ttf);
+    }
+
+    body {
+        font-family: Janet;
+        margin-top: 3em;
+        margin-left: 3em;
+        font-size: 15px;
+        letter-spacing: 15px;
+        white-space: nowrap;
+    }
+
+    .note {
+        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        letter-spacing: initial;
+    }
+
+    .b-line {
+        height: 1em;
+    }
+
+    span {
+        text-transform: lowercase;
+        color: black;
+        transition: all 1s linear;
+    }
+
+    .invis {
+        visibility: hidden !important;
+    }
+
+    .uppercase {
+        text-transform: uppercase;
+    }
+
+    .recolor {
+        color: red;
+    }
+
+    #play-button {
+        width: 100vw;
+        height: 100vh;
+        background-color:white;
+        position:fixed;
+        top: 0;
+        right: 0;
+        margin: 0;
+    }
+
+    #play-button div {
+        margin-top:40vh;
+    }
+
+    #play-button p {
+        font-family:'Courier New', Courier, monospace;
+        text-align: center;
+        margin-bottom:3em;
+        cursor:pointer;
+    }
+
+</style>
+</head>
+
+<body>
+
+<!--The poem text-->
+<div id="poem">
+    <p>The text</p>
+    <p>of the poem</p>
+    <p class="b-line"> </p> <!--This line is an empty stanza break-->
+    <p>goes</p>
+    <p>in here.</p>
+</div>
+
+<!--This is an overlay that acts as a welcome screen to the poem-->
+<div id="play-button">
+    <div>
+        <p style="font-weight: bold;">POEM TITLE</p>
+        <p>view the poem</p>
+    </div>
+</div>
+
+<script src="site_files/jquery-3.4.1.js"></script>
+<script>
+
+// individual music box notes
+var sounds = [
+    new Audio("site_files/1.mp3"),
+    new Audio("site_files/2.mp3"),
+    new Audio("site_files/3.mp3"),
+    new Audio("site_files/4.mp3"),
+    new Audio("site_files/5.mp3"),
+    new Audio("site_files/6.mp3"),
+    new Audio("site_files/7.mp3"),
+    new Audio("site_files/8.mp3"),
+    new Audio("site_files/9.mp3"),
+    new Audio("site_files/10.mp3"),
+    new Audio("site_files/11.mp3"),
+    new Audio("site_files/12.mp3"),
+    new Audio("site_files/13.mp3"),
+    new Audio("site_files/14.mp3"),
+    new Audio("site_files/15.mp3"),
+    new Audio("site_files/16.mp3"),
+    new Audio("site_files/17.mp3"),
+    new Audio("site_files/18.mp3"),
+    new Audio("site_files/19.mp3"),
+    new Audio("site_files/20.mp3"),
+    new Audio("site_files/21.mp3"),
+    new Audio("site_files/22.mp3"),
+    new Audio("site_files/23.mp3"),
+    new Audio("site_files/24.mp3"),
+    new Audio("site_files/25.mp3"),
+    new Audio("site_files/26.mp3"),
+    new Audio("site_files/27.mp3"),
+    new Audio("site_files/28.mp3"),
+    new Audio("site_files/29.mp3"),
+    new Audio("site_files/30.mp3")
+];
+
+// putting each character into a span tag
+$('#poem p').each(function(){
+    var s = $(this).html();
+    var out = '';
+    for (var z = 0; z < s.length; ++z) {
+        var ch = s.charAt(z);
+        if (ch == '<') {
+            while (ch != '>') {
+                out += ch;
+                ch = s.charAt(++z);
+            }
+            out += ch;
+            continue;
+        }
+        out += '<span>' + ch + '</span>';
+    }
+    $(this).html(out);
+});
+
+//randomly selecting characters and switching case
+function case_switch() {
+
+    $('span').each(function(){
+        const rand = Math.random() < 0.01; //boolean value to determine whether a character transforms (currently at 1 in 20)
+        const t_rand = Math.random(); // random 0-1 value for determining delay on transformation 
+
+        // setting delay based on value of t_rand
+        if (t_rand < 0.33) {
+            timing = 0;
+        } else if (t_rand < 0.66) {
+            timing = 10000;
+        } else {
+            timing = 20000;
+        }
+
+        if (rand == true) {
+            var current = this;
+            //fading out
+            setTimeout(function(){
+                $(current).css({"color":"white"});
+            },timing);
+            //switching case while invisible
+            setTimeout(function(){
+                $(current).toggleClass("uppercase")
+
+                //sound
+                var n = Array.from(current.parentNode.children).indexOf(current); //getting character position in line
+                if (n < sounds.length) { // safety step - in case any lines go over the 30 character limit
+                    sounds[n].play();
+                } else {
+                    console.log ("NOTE: line is too long!");
+                }
+            },timing+1000);
+            //fading back in
+            setTimeout(function(){
+                $(current).css({"color":"black"});
+            },timing+2000);
+        }
+    });
+}
+
+//play button added for browser security (i.e. Chrome not allowing auto-play without user interaction)
+$("#play-button p").click(function(){
+    $("#play-button").css({"visibility":"hidden"});
+    setTimeout(case_switch,2000);
+    setInterval(case_switch,10000);
+});
+
+</script>
+</body>
+</html>
